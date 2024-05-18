@@ -180,3 +180,277 @@ WHERE S.age &gt; 30;</code></pre>
         <img src="eval-strategy.png" alt="evaluation strategy" />
     </figure>
 </section>
+<section>
+    <h2 id="join-queries">Join queries</h2>
+    <pre><code>SELECT S.sname, R.day
+FROM   Sailors S, Reserve R
+WHERE  S.sid = R.sid;</code></pre>
+    <ul>
+        <li>
+            Join queries allow us to output data from a
+            <em>cross-product</em> of multiple tables.
+        </li>
+    </ul>
+</section>
+<section>
+    <h2 id="cross-product">Cross product</h2>
+    <pre><code>SELECT * FROM Sailors, Reserves;</code></pre>
+    <ul>
+        <li>All pairs of tuples, concatenated.</li>
+    </ul>
+</section>
+<section>
+    <h2 id="cross-product-continued">Cross product (continued)</h2>
+    <table>
+        <thead>
+            <tr class="header">
+                <th>sid</th>
+                <th>sname</th>
+                <th>rating</th>
+                <th>age</th>
+                <th>sid</th>
+                <th>bid</th>
+                <th>day</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="odd">
+                <td>22</td>
+                <td>Dustin</td>
+                <td>7</td>
+                <td>45</td>
+                <td>22</td>
+                <td>101</td>
+                <td>10/10/98</td>
+            </tr>
+            <tr class="even">
+                <td>22</td>
+                <td>Dustin</td>
+                <td>7</td>
+                <td>45</td>
+                <td>22</td>
+                <td>102</td>
+                <td>10/10/98</td>
+            </tr>
+            <tr class="odd">
+                <td>22</td>
+                <td>Dustin</td>
+                <td>7</td>
+                <td>45</td>
+                <td>22</td>
+                <td>103</td>
+                <td>10/8/98</td>
+            </tr>
+            <tr class="even">
+                <td>22</td>
+                <td>Dustin</td>
+                <td>7</td>
+                <td>45</td>
+                <td>22</td>
+                <td>104</td>
+                <td>10/7/98</td>
+            </tr>
+            <tr class="odd">
+                <td>22</td>
+                <td>Dustin</td>
+                <td>7</td>
+                <td>45</td>
+                <td>31</td>
+                <td>102</td>
+                <td>11/10/98</td>
+            </tr>
+            <tr class="even">
+                <td>22</td>
+                <td>Dustin</td>
+                <td>7</td>
+                <td>45</td>
+                <td>31</td>
+                <td>103</td>
+                <td>11/6/98</td>
+            </tr>
+            <tr class="odd">
+                <td>22</td>
+                <td>Dustin</td>
+                <td>7</td>
+                <td>45</td>
+                <td>31</td>
+                <td>104</td>
+                <td>11/12/98</td>
+            </tr>
+            <tr class="even">
+                <td>22</td>
+                <td>Dustin</td>
+                <td>7</td>
+                <td>45</td>
+                <td>64</td>
+                <td>101</td>
+                <td>9/5/98</td>
+            </tr>
+            <tr class="odd">
+                <td>22</td>
+                <td>Dustin</td>
+                <td>7</td>
+                <td>45</td>
+                <td>64</td>
+                <td>102</td>
+                <td>9/8/98</td>
+            </tr>
+            <tr class="even">
+                <td>22</td>
+                <td>Dustin</td>
+                <td>7</td>
+                <td>45</td>
+                <td>74</td>
+                <td>103</td>
+                <td>9/8/98</td>
+            </tr>
+            <tr class="odd">
+                <td>...</td>
+                <td>...</td>
+                <td>...</td>
+                <td>...</td>
+                <td>...</td>
+                <td>...</td>
+                <td>...</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+<section>
+    <h2 id="self-join-queries">Self-join queries</h2>
+    <pre><code>SELECT S.sname AS &quot;Senior&quot;, S.age AS &quot;Age&quot;,
+       J.sname AS &quot;Junior&quot;, J.age AS &quot;Age&quot;
+FROM   Sailors S, Sailors J
+WHERE  S.age &gt; J.age;</code></pre>
+    <ul>
+        <li>Output: pairs of senior-junior relationship.</li>
+    </ul>
+</section>
+<section>
+    <h2 id="set-semantics">Set semantics</h2>
+    <pre><code>R = { A, A, A, A, B, B, C, D }
+S = { A, A, B, B, B, C, E }</code></pre>
+    <ul>
+        <li>Union: <code>{ A, B, C, D, E }</code></li>
+        <li>Intersect: <code>{ A, B, C }</code></li>
+        <li>Except: <code>{ D }</code></li>
+    </ul>
+</section>
+<section>
+    <h2 id="multiset-semantics">Multiset semantics</h2>
+    <pre><code>R = { A, A, A, A, B, B, C, D } = { A(4), B(2), C(1), D(1) }
+S = { A, A, B, B, B, C, E } = { A(2), B(3), C(1), E(1) }</code></pre>
+    <ul>
+        <li>
+            Union all (sum):
+            <code>{ A(4+2), B(2+5), C(1+1), D(1+0), E(0+1) }</code>
+        </li>
+        <li>
+            Intersect all (minimum):
+            <code
+                >{ A(min(4,2)), B(min(2,5)), C(min(1,1)), D(min(1,0)),
+                E(min(0,1)) }</code
+            >
+        </li>
+        <li>
+            Except all (difference):
+            <code>{ A(4-2), B(2-5), C(1-1), D(1-0), E(0-1) }</code>
+        </li>
+    </ul>
+</section>
+<section>
+    <h2 id="union">Union</h2>
+    <pre><code>SELECT R.sid
+FROM   Boats B, Reserves R
+WHERE  R.bid = B.bid
+       AND (B.color = &#39;red&#39; OR B.color = &#39;green&#39;);
+
+---
+
+SELECT R.sid
+FROM   Boats B, Reserves R
+WHERE  R.bid = B.bid AND B.color = &#39;red&#39;
+
+UNION ALL
+
+SELECT R.sid
+FROM   Boats B, Reserves R
+WHERE  R.bid = B.bid AND B.color = &#39;green&#39;;</code></pre>
+    <ul>
+        <li>
+            <code>sid</code> of sailors who reserved a red
+            <strong>or</strong> green boat.
+        </li>
+        <li>These two queries are equivalent.</li>
+    </ul>
+</section>
+<section>
+    <h2 id="intersect">Intersect</h2>
+    <pre><code>SELECT R.sid
+FROM   Boats B, Reserves R
+WHERE  R.bid = B.bid
+       AND (B.color = &#39;red&#39; AND B.color = &#39;green&#39;);
+
+---
+
+SELECT R.sid
+FROM   Boats B, Reserves R
+WHERE  R.bid = B.bid AND B.color = &#39;red&#39;
+
+INTERSECT
+
+SELECT R.sid
+FROM   Boats B, Reserves R
+WHERE  R.bid = B.bid AND B.color = &#39;green&#39;;</code></pre>
+    <ul>
+        <li>
+            <code>sid</code> of sailors who reserved a red
+            <strong>and</strong> green boat.
+        </li>
+        <li>These two queries are equivalent.</li>
+    </ul>
+</section>
+<section>
+    <h2 id="except">Except</h2>
+    <pre><code>SELECT R.sid
+FROM   Boats B, Reserves R
+WHERE  R.bid = B.bid AND B.color = &#39;red&#39;
+
+EXCEPT
+
+SELECT R.sid
+FROM   Boats B, Reserves R
+WHERE  R.bid = B.bid AND B.color = &#39;green&#39;;</code></pre>
+    <ul>
+        <li>
+            <code>sid</code> of sailors who reserved a red boat,
+            <strong>but not</strong> a green boat.
+        </li>
+    </ul>
+</section>
+<section>
+    <h2 id="nested-queries">Nested queries</h2>
+    <pre><code>SELECT S.sname
+FROM   Sailors S
+WHERE  S.sid IN (SELECT R.sid
+                 FROM   Reserves R
+                 WHERE  R.bid = 102);</code></pre>
+    <ul>
+        <li>What is the names of sailors who have reserved boat #102?</li>
+    </ul>
+</section>
+<section>
+    <h2 id="nested-queries-not-in">Nested queries (not in)</h2>
+    <pre><code>SELECT S.sname
+FROM   Sailors S
+WHERE  S.sid NOT IN (SELECT R.sid
+                     FROM   Reserves R
+                     WHERE  R.bid = 103);</code></pre>
+    <ul>
+        <li>
+            What is the names of sailors who have <em>not</em> reserved boat
+            #103?
+        </li>
+    </ul>
+</section>
+
